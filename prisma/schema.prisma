@@ -1,0 +1,62 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         Int             @id @default(autoincrement())
+  name       String
+  email      String          @unique
+  password   String
+  created_at DateTime        @default(now())
+  updated_at DateTime        @updatedAt
+  projects   Project[]       @relation("ProjectOwner")
+  members    ProjectMember[]
+  tasks      Task[]          @relation("TaskAssignee")
+  created_tasks Task[]       @relation("TaskCreator")
+}
+
+model Project {
+  id          Int             @id @default(autoincrement())
+  name        String
+  description String?
+  owner_id    Int
+  owner       User            @relation("ProjectOwner", fields: [owner_id], references: [id], onDelete: Cascade)
+  created_at  DateTime        @default(now())
+  updated_at  DateTime        @updatedAt
+  members     ProjectMember[]
+  tasks       Task[]
+}
+
+model ProjectMember {
+  project_id Int
+  user_id    Int
+  project    Project @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  user       User    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@id([project_id, user_id])
+}
+
+// Enums are not supported natively by SQLite, using String and application level validation
+
+model Task {
+  id           Int      @id @default(autoincrement())
+  title        String
+  description  String?
+  priority     String   @default("MEDIUM") // LOW, MEDIUM, HIGH
+  status       String   @default("TODO") // TODO, IN_PROGRESS, DONE
+  due_date     DateTime
+  creator_id   Int
+  creator      User     @relation("TaskCreator", fields: [creator_id], references: [id], onDelete: Cascade)
+  assignee_id  Int?
+  assignee     User?    @relation("TaskAssignee", fields: [assignee_id], references: [id], onDelete: SetNull)
+  project_id   Int
+  project      Project  @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+  completed_at DateTime?
+}
