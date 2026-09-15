@@ -16,6 +16,13 @@ Developed for the **Axionix Backend Engineering Internship Programme**. Designed
 
 ---
 
+## 🎬 Live Interactive Walkthrough
+
+![API Swagger Live Demo](demo_walkthrough.webp)
+*Automated end-to-end execution of user authentication, JWT authorization, project workspaces, task state machine transitions, and real-time metrics aggregation.*
+
+---
+
 ## 📑 Table of Contents
 
 - [System Architecture](#-system-architecture)
